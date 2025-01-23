@@ -3,10 +3,12 @@ import re
 class DayFour:
     def __init__(self):
         self.part1_count = 0
+        self.part2_count = 0
+        self.mas_list = {"MAS", "SAM"} 
 
     def check_and_count(self, word):
-        if word in {"XMAS", "SAMX"}:
-            self.part1_count +=1
+        if word in {"XMAS", "SAMX"} and len(word) == 4:
+            self.part1_count += 1
 
     def horizontal_count(self, lines: list[str]):
         """Count occurrences of target words horizontally."""
@@ -27,7 +29,7 @@ class DayFour:
     def diagonal_right_to_left(self, lines):
         """Count occurrences of target words diagonally from top right to bottom left."""
         for row in range(len(lines) - 3):
-            for col in range(3, len(lines[row])):  # Start from the 4th column
+            for col in range(3, len(lines[row])): 
                 word = (
                     lines[row][col]
                     + lines[row + 1][col - 1]
@@ -38,8 +40,8 @@ class DayFour:
 
     def vertical_count(self, lines: list[str]):
         """Count occurrences of target words vertically."""
-        for col in range(len(lines[0])):  # Loop through columns
-            for row in range(len(lines) - 3):  # Ensure there are enough rows
+        for col in range(len(lines[0])):  
+            for row in range(len(lines) - 3): 
                 word = (
                     lines[row][col]
                     + lines[row + 1][col]
@@ -48,6 +50,24 @@ class DayFour:
                 )
                 self.check_and_count(word)
 
+    def diagonal_mas_count(self, lines: list[str]):
+        """Count occurrences of 'X-shaped' pattern formed by the word 'MAS'."""
+        for row in range(len(lines) - 2):
+            for col in range(len(lines[row]) - 2):
+                word1 = (
+                    lines[row][col]
+                    + lines[row + 1][col + 1]
+                    + lines[row + 2][col + 2]
+                )
+                word2 = (
+                    lines[row][col + 2]
+                    + lines[row + 1][col + 1]
+                    + lines[row + 2][col]
+                )
+                if word1 in self.mas_list and word2 in self.mas_list:
+                    self.part2_count +=1
+
+        
 
 def main():
     d4 = DayFour()
@@ -58,7 +78,9 @@ def main():
         d4.diagonal_left_to_right(lines)
         d4.diagonal_right_to_left(lines)
         d4.horizontal_count(lines)
-        print(f"final count: {d4.part1_count}")
+        print(f"Part 1 Count: {d4.part1_count}")
+        d4.diagonal_mas_count(lines)
+        print(f"Part 2 Count: {d4.part2_count}")
     except FileNotFoundError:
         print("Error, the file \"day4.txt\" was not found.")
 
